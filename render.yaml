@@ -1,0 +1,28 @@
+services:
+  - type: web
+    name: subshield-api
+    runtime: node
+    plan: free
+    buildCommand: npm install --include=dev
+    startCommand: npx tsx apps/api/src/index.ts
+    healthCheckPath: /health
+    envVars:
+      - key: PAYPAL_CLIENT_ID
+        sync: false
+      - key: PAYPAL_CLIENT_SECRET
+        sync: false
+      - key: ZAPIER_WEBHOOK_URL
+        sync: false
+      - key: WEB_ORIGIN # https URL of subshield-web, for CORS
+        sync: false
+      - key: PUBLIC_API_URL # https URL of this service, used in alert cancel links
+        sync: false
+  - type: web
+    name: subshield-web
+    runtime: node
+    plan: free
+    buildCommand: npm install --include=dev && npm run build -w web
+    startCommand: npm run start -w web
+    envVars:
+      - key: NEXT_PUBLIC_API_URL # https URL of subshield-api; baked in at build time
+        sync: false

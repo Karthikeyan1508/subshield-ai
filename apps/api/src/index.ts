@@ -7,7 +7,7 @@ import { alertPayload, sendAlert, shouldAlert } from "./alert.js";
 
 const port = Number(process.env.PORT ?? 4000);
 const app = express();
-app.use(cors({ origin: ["http://localhost:3000", "http://127.0.0.1:3000"] }));
+app.use(cors({ origin: ["http://localhost:3000", "http://127.0.0.1:3000", process.env.WEB_ORIGIN].filter((o): o is string => !!o) }));
 app.use(express.json());
 
 app.get("/health", (_req, res) => res.json({ ok: true }));
