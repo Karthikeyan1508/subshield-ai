@@ -22,6 +22,7 @@ export async function call(name: string, args: Record<string, unknown>): Promise
   if (!tool) throw new Error(`unknown tool: ${name}`);
   const out = await tool.execute(args, {});
   const data = typeof out === "string" ? JSON.parse(out) : out;
+  if (data?.ok === false) throw new Error(`${name}: ${data.status} ${data.message}`);
   if (data?.name && data?.message && data?.debug_id) throw new Error(`${name}: ${data.name} ${data.message}`);
   return data;
 }

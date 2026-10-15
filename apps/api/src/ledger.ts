@@ -6,7 +6,7 @@ const FILE = new URL("../data/ledger.json", import.meta.url);
 
 // PayPal has no "list subscriptions" API, so we remember the ids we created.
 // shortcut: local JSON file, swap for a DB when users link real accounts.
-export type LedgerEntry = { subscriptionId: string; planId: string; merchant: string; approveUrl?: string; prices?: { at: string; price: number }[] };
+export type LedgerEntry = { subscriptionId: string; planId: string; merchant: string; approveUrl?: string; prices?: { at: string; price: number }[]; alertedFor?: number };
 
 export async function readLedger(): Promise<LedgerEntry[]> {
   try {

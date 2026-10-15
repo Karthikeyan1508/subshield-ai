@@ -11,11 +11,14 @@ export default function Dashboard() {
   const [subs, setSubs] = useState<Subscription[] | null>(null);
   const [error, setError] = useState<string>();
 
-  useEffect(() => {
+  const load = () =>
     fetch(`${API}/api/subscriptions`)
       .then((r) => (r.ok ? r.json() : r.json().then((b) => Promise.reject(new Error(b.error ?? r.statusText)))))
       .then(setSubs)
       .catch((e) => setError(e.message));
+
+  useEffect(() => {
+    load();
   }, []);
 
   if (error) return <p role="alert">Could not load subscriptions: {error}</p>;
@@ -25,7 +28,7 @@ export default function Dashboard() {
       <h2>Renewals — next 30 days</h2>
       <Timeline subs={subs} />
       <h2>Subscriptions</h2>
-      <Matrix subs={subs} />
+      <Matrix subs={subs} onCancelled={load} />
     </>
   );
 }
