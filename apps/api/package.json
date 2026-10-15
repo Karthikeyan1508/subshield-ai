@@ -7,7 +7,8 @@
     "smoke": "tsx src/smoke.ts",
     "seed": "tsx src/seed.ts",
     "test": "node --import tsx --test src/*.test.ts",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "hike": "tsx src/hike.ts"
   },
   "dependencies": {
     "@paypal/agent-toolkit": "^1.11.0",

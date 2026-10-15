@@ -25,3 +25,16 @@ export async function call(name: string, args: Record<string, unknown>): Promise
   if (data?.name && data?.message && data?.debug_id) throw new Error(`${name}: ${data.name} ${data.message}`);
   return data;
 }
+
+// Raw REST for endpoints the toolkit does not wrap (e.g. plan price updates).
+export async function rest(method: string, path: string, body?: unknown): Promise<any> {
+  toolkit ??= paypalToolkit();
+  const res = await fetch(toolkit.client.getBaseUrl() + path, {
+    method,
+    headers: await toolkit.client.getHeaders(),
+    body: body === undefined ? undefined : JSON.stringify(body),
+  });
+  const text = await res.text();
+  if (!res.ok) throw new Error(`${method} ${path}: ${res.status} ${text.slice(0, 300)}`);
+  return text ? JSON.parse(text) : {};
+}
