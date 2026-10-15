@@ -3,6 +3,7 @@ import express from "express";
 import cors from "cors";
 import { loadSubscriptions, readLedger, writeLedger } from "./ledger.js";
 import { call } from "./paypal.js";
+import { seedIfEmpty } from "./seed.js";
 import { alertPayload, sendAlert, shouldAlert } from "./alert.js";
 
 const port = Number(process.env.PORT ?? 4000);
@@ -60,4 +61,8 @@ app.use((err: Error, _req: express.Request, res: express.Response, _next: expres
   res.status(502).json({ error: err.message });
 });
 
-app.listen(port, () => console.log(`api on :${port}`));
+app.listen(port, () => {
+  console.log(`api on :${port}`);
+  // The ledger is a local file that a Render redeploy wipes, so refill it on boot.
+  seedIfEmpty().catch((e) => console.error("seed failed:", e.message));
+});
