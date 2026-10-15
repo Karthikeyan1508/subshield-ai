@@ -106,12 +106,12 @@ function createHttpClientAdapter(client: HttpClient): HttpClientInterface {
 function getBaseUri(server: Server = 'default', config: Configuration): string {
   if (config.environment === Environment.Production) {
     if (server === 'default') {
-      return 'http://localhost:4000';
+      return 'https://subshield-api.onrender.com';
     }
   }
   if (config.environment === Environment.Environment2) {
     if (server === 'default') {
-      return 'https://subshield-api.onrender.com';
+      return 'http://localhost:4000';
     }
   }
   throw new Error('Could not get Base URL. Invalid environment or server.');

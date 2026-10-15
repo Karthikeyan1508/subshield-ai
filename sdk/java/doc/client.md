@@ -11,9 +11,9 @@ The following parameters are configurable for the API Client:
 The API client can be initialized as follows:
 
 ```java
-import localhost4000.Environment;
-import localhost4000.SubShieldAIAPIClient;
-import localhost4000.exceptions.ApiException;
+import com.onrender.subshieldapi.Environment;
+import com.onrender.subshieldapi.SubShieldAIAPIClient;
+import com.onrender.subshieldapi.exceptions.ApiException;
 
 public class Program {
     public static void main(String[] args) {

@@ -14,7 +14,7 @@
 ## Example
 
 ```java
-import localhost4000.models.HealthResponse;
+import com.onrender.subshieldapi.models.HealthResponse;
 
 HealthResponse healthResponse = new HealthResponse.Builder(
     false

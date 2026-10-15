@@ -15,8 +15,8 @@
 ## Example
 
 ```java
-import localhost4000.DateTimeHelper;
-import localhost4000.models.PriceHistory;
+import com.onrender.subshieldapi.DateTimeHelper;
+import com.onrender.subshieldapi.models.PriceHistory;
 
 PriceHistory priceHistory = new PriceHistory.Builder(
     DateTimeHelper.fromRfc8601DateTime("2016-03-13T12:52:32.123Z"),

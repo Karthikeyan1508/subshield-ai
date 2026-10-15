@@ -16,7 +16,7 @@
 ## Example
 
 ```java
-import localhost4000.models.Hike;
+import com.onrender.subshieldapi.models.Hike;
 
 Hike hike = new Hike.Builder(
     120.78D,

@@ -23,9 +23,9 @@ from subshieldaiapi.http.proxy_settings import (
 class Environment(Enum):
     """An enum for SDK environments."""
 
-    # Local
-    PRODUCTION = 0
     # Render
+    PRODUCTION = 0
+    # Local
     ENVIRONMENT2 = 1
 
     @classmethod
@@ -169,10 +169,10 @@ class Configuration(HttpClientConfiguration):
     # All the environments the SDK can run in
     environments = {
         Environment.PRODUCTION: {
-            Server.DEFAULT: "http://localhost:4000",
+            Server.DEFAULT: "https://subshield-api.onrender.com",
         },
         Environment.ENVIRONMENT2: {
-            Server.DEFAULT: "https://subshield-api.onrender.com",
+            Server.DEFAULT: "http://localhost:4000",
         },
     }
 

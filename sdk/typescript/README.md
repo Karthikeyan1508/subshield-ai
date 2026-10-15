@@ -160,8 +160,8 @@ The SDK can be configured to use a different environment for making API calls. A
 
 | Name | Description |
 |  --- | --- |
-| Production | **Default** Local |
-| Environment2 | Render |
+| Production | **Default** Render |
+| Environment2 | Local |
 
 ## List of APIs
 

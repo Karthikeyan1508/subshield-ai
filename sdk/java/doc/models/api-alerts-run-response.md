@@ -14,8 +14,8 @@
 ## Example
 
 ```java
+import com.onrender.subshieldapi.models.ApiAlertsRunResponse;
 import java.util.Arrays;
-import localhost4000.models.ApiAlertsRunResponse;
 
 ApiAlertsRunResponse apiAlertsRunResponse = new ApiAlertsRunResponse.Builder(
     Arrays.asList(

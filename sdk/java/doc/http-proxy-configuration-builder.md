@@ -24,8 +24,8 @@ To configure the SDK to use a proxy server, initialize the proxy configuration d
 ## Usage Example
 
 ```java
-import localhost4000.SubShieldAIAPIClient;
-import localhost4000.http.client.HttpProxyConfiguration;
+import com.onrender.subshieldapi.SubShieldAIAPIClient;
+import com.onrender.subshieldapi.http.client.HttpProxyConfiguration;
 
 SubShieldAIAPIClient client = new SubShieldAIAPIClient.Builder()
   .httpClientConfig(configBuilder -> configBuilder

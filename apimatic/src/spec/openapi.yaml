@@ -10,10 +10,10 @@ info:
     url: https://opensource.org/licenses/MIT
 security: [] # no auth yet, see description
 servers:
-  - url: http://localhost:4000
-    description: Local
   - url: https://subshield-api.onrender.com
     description: Render
+  - url: http://localhost:4000
+    description: Local
 paths:
   /health:
     get:

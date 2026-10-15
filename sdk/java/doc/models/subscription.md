@@ -25,11 +25,11 @@
 ## Example
 
 ```java
+import com.onrender.subshieldapi.DateTimeHelper;
+import com.onrender.subshieldapi.models.Hike;
+import com.onrender.subshieldapi.models.PriceHistory;
+import com.onrender.subshieldapi.models.Subscription;
 import java.util.Arrays;
-import localhost4000.DateTimeHelper;
-import localhost4000.models.Hike;
-import localhost4000.models.PriceHistory;
-import localhost4000.models.Subscription;
 
 Subscription subscription = new Subscription.Builder(
     "id4",

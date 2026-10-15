@@ -14,7 +14,7 @@
 ## Example
 
 ```java
-import localhost4000.models.ApiSubscriptionsCancelResponse;
+import com.onrender.subshieldapi.models.ApiSubscriptionsCancelResponse;
 
 ApiSubscriptionsCancelResponse apiSubscriptionsCancelResponse = new ApiSubscriptionsCancelResponse.Builder(
     false

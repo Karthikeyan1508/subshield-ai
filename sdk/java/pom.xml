@@ -129,7 +129,7 @@
         <configuration>
           <archive>
             <manifestEntries>
-              <Automatic-Module-Name>localhost4000</Automatic-Module-Name>
+              <Automatic-Module-Name>com.onrender.subshieldapi</Automatic-Module-Name>
             </manifestEntries>
           </archive>
         </configuration>

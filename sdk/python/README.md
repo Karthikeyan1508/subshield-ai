@@ -130,8 +130,8 @@ The SDK can be configured to use a different environment for making API calls. A
 
 | Name | Description |
 |  --- | --- |
-| PRODUCTION | **Default** Local |
-| ENVIRONMENT2 | Render |
+| PRODUCTION | **Default** Render |
+| ENVIRONMENT2 | Local |
 
 ## List of APIs
 
