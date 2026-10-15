@@ -46,6 +46,7 @@ export function normalize(entry: LedgerEntry, sub: any, plan: any): Omit<Subscri
   const start = sub.start_time ? Date.parse(sub.start_time) : NaN;
   const days =
     trial?.frequency?.interval_unit === "DAY" ? trial.frequency.interval_count * (trial.total_cycles ?? 1) : null;
+  const trialEndsAt = days !== null && !Number.isNaN(start) ? new Date(start + days * 864e5).toISOString() : null;
   return {
     id: entry.subscriptionId,
     merchant: entry.merchant,
@@ -53,8 +54,8 @@ export function normalize(entry: LedgerEntry, sub: any, plan: any): Omit<Subscri
     price: fixed ? Number(fixed.value) : null,
     currency: fixed?.currency_code ?? null,
     interval: regular ? `${regular.frequency.interval_count} ${regular.frequency.interval_unit}` : null,
-    nextBillingTime: sub.billing_info?.next_billing_time ?? null,
-    trialEndsAt: days !== null && !Number.isNaN(start) ? new Date(start + days * 864e5).toISOString() : null,
+    nextBillingTime: sub.billing_info?.next_billing_time ?? trialEndsAt ?? sub.start_time ?? null,
+    trialEndsAt,
     approveUrl: sub.status === "APPROVAL_PENDING" ? (entry.approveUrl ?? null) : null,
   };
 }

@@ -1,22 +1,15 @@
-// Demo helper: raise a seeded merchant's plan price on PayPal. Usage: npm run hike -w api -- FitPass 19.99
+// Demo only: PayPal refuses plan price updates here, so pretend the merchant used to charge less.
+// Usage: npm run hike -w api -- Streamify 6.66   (current price then reads as a hike from 6.66)
 import "./env.js";
-import { call, rest } from "./paypal.js";
-import { readLedger } from "./ledger.js";
+import { readLedger, writeLedger } from "./ledger.js";
 
-const [merchant, value] = process.argv.slice(2);
-if (!merchant || !Number.isFinite(Number(value))) throw new Error("usage: hike <merchant> <new price>");
+const [merchant, previous] = process.argv.slice(2);
+if (!merchant || !(Number(previous) > 0)) throw new Error("usage: hike <merchant> <previous price>");
 
-const entry = (await readLedger()).find((e) => e.merchant.toLowerCase() === merchant.toLowerCase());
+const entries = await readLedger();
+const entry = entries.find((e) => e.merchant.toLowerCase() === merchant.toLowerCase());
 if (!entry) throw new Error(`no ledger entry for ${merchant}`);
 
-const plan = await call("show_subscription_plan_details", { plan_id: entry.planId });
-const regular = plan.billing_cycles.find((c: any) => c.tenure_type === "REGULAR");
-await rest("POST", `/v1/billing/plans/${entry.planId}/update-pricing-schemes`, {
-  pricing_schemes: [
-    {
-      billing_cycle_sequence: regular.sequence,
-      pricing_scheme: { fixed_price: { value: Number(value).toFixed(2), currency_code: regular.pricing_scheme.fixed_price.currency_code } },
-    },
-  ],
-});
-console.log(`${entry.merchant}: ${regular.pricing_scheme.fixed_price.value} -> ${Number(value).toFixed(2)}`);
+(entry.prices ??= []).unshift({ at: new Date(Date.now() - 30 * 864e5).toISOString(), price: Number(previous) });
+await writeLedger(entries);
+console.log(`${entry.merchant}: history now ${entry.prices.map((p) => p.price).join(" -> ")}`);

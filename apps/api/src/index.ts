@@ -4,7 +4,7 @@ import cors from "cors";
 import { loadSubscriptions } from "./ledger.js";
 
 const app = express();
-app.use(cors({ origin: "http://localhost:3000" }));
+app.use(cors({ origin: ["http://localhost:3000", "http://127.0.0.1:3000"] }));
 app.use(express.json());
 
 app.get("/health", (_req, res) => res.json({ ok: true }));
