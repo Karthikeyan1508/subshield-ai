@@ -1,11 +1,11 @@
 {
   "info": {
     "name": "SubShield AI",
-    "description": "Sandbox API for the SubShield AI subscription ledger. Set the baseUrl variable (local: http://localhost:4000).",
+    "description": "Sandbox API for the SubShield AI subscription ledger. Set the baseUrl variable (default: the live Render API; local: http://localhost:4000).",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "variable": [
-    { "key": "baseUrl", "value": "http://localhost:4000" },
+    { "key": "baseUrl", "value": "https://subshield-api.onrender.com" },
     { "key": "subscriptionId", "value": "" }
   ],
   "item": [
@@ -87,8 +87,9 @@
           "script": {
             "type": "text/javascript",
             "exec": [
-              "pm.test('200 with sent list or 503 without webhook', () => {",
-              "  pm.expect([200, 503]).to.include(pm.response.code);",
+              "// 502 means Zapier rejected the webhook (zap off or URL changed).",
+              "pm.test('200 with sent list, 503 without webhook, 502 if Zapier rejects', () => {",
+              "  pm.expect([200, 502, 503]).to.include(pm.response.code);",
               "  if (pm.response.code === 200) pm.expect(pm.response.json().sent).to.be.an('array');",
               "});"
             ]

@@ -1,0 +1,154 @@
+openapi: 3.0.3
+info:
+  title: SubShield AI API
+  version: 0.1.0
+  description: >
+    Subscription ledger, cancellation and alerting on top of the PayPal Agent Toolkit.
+    Sandbox only. The POST routes have no authentication yet.
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+security: [] # no auth yet, see description
+servers:
+  - url: http://localhost:4000
+    description: Local
+  - url: https://subshield-api.onrender.com
+    description: Render
+paths:
+  /health:
+    get:
+      operationId: getHealth
+      summary: Liveness check
+      responses:
+        "200":
+          description: Service is up
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [ok]
+                properties:
+                  ok: { type: boolean }
+  /api/subscriptions:
+    get:
+      operationId: listSubscriptions
+      summary: List tracked subscriptions with price history, detected hike and predatory score
+      responses:
+        "200":
+          description: Subscriptions
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/Subscription" }
+        "502":
+          $ref: "#/components/responses/UpstreamError"
+  /api/subscriptions/{id}/cancel:
+    post:
+      operationId: cancelSubscription
+      summary: Cancel a subscription through PayPal
+      description: PayPal only cancels subscriptions the buyer has approved (ACTIVE or SUSPENDED).
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: PayPal subscription id, as returned by listSubscriptions
+          schema: { type: string, example: I-YSRDPHD11FLG }
+      responses:
+        "200":
+          description: Cancelled
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [ok]
+                properties:
+                  ok: { type: boolean }
+        "404":
+          description: Id is not in the ledger
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Error" }
+        "502":
+          $ref: "#/components/responses/UpstreamError"
+  /api/alerts/run:
+    post:
+      operationId: runAlerts
+      summary: Send a Zapier alert for each subscription newly over the score threshold
+      description: Each subscription alerts once per price. Intended to be called by a cron job.
+      responses:
+        "200":
+          description: Ids that were alerted on this run
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [sent]
+                properties:
+                  sent:
+                    type: array
+                    items: { type: string }
+        "503":
+          description: ZAPIER_WEBHOOK_URL is not configured
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Error" }
+        "502":
+          $ref: "#/components/responses/UpstreamError"
+components:
+  responses:
+    UpstreamError:
+      description: PayPal or Zapier rejected the call
+      content:
+        application/json:
+          schema: { $ref: "#/components/schemas/Error" }
+  schemas:
+    Error:
+      type: object
+      required: [error]
+      properties:
+        error: { type: string }
+    Hike:
+      type: object
+      nullable: true
+      required: [from, to, pct]
+      properties:
+        from: { type: number }
+        to: { type: number }
+        pct: { type: integer, description: "Percent increase, rounded" }
+    Subscription:
+      type: object
+      required: [id, merchant, status, priceHistory, hike, predatoryScore]
+      properties:
+        id: { type: string }
+        merchant: { type: string }
+        status:
+          type: string
+          description: PayPal status
+          example: APPROVAL_PENDING
+        price: { type: number, nullable: true }
+        currency: { type: string, nullable: true, example: USD }
+        interval: { type: string, nullable: true, example: 1 MONTH }
+        nextBillingTime:
+          type: string
+          format: date-time
+          nullable: true
+          description: Next charge, or the expected first charge while approval is pending
+        trialEndsAt: { type: string, format: date-time, nullable: true }
+        approveUrl:
+          type: string
+          nullable: true
+          description: Buyer approval link, only while APPROVAL_PENDING
+        priceHistory:
+          type: array
+          items:
+            type: object
+            required: [at, price]
+            properties:
+              at: { type: string, format: date-time }
+              price: { type: number }
+        hike: { $ref: "#/components/schemas/Hike" }
+        predatoryScore:
+          type: integer
+          minimum: 0
+          maximum: 100
