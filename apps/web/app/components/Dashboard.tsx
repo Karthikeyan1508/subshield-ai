@@ -9,29 +9,8 @@ import TrendChart from "./TrendChart";
 const Timeline = dynamic(() => import("./Timeline"), { ssr: false, loading: () => <section className="card" style={{ height: 240 }} /> });
 
 const Avatar = ({ name, size = 36 }: { name: string; size?: number }) => (
-  <span className="avatar" style={{ width: size, height: size, background: avatarBg(name), fontSize: size * 0.42 }}>{name[0]}</span>
+  <span className="avatar" style={{ width: size, height: size, background: avatarBg(name), fontSize: size * 0.5 }}>{name[0]}</span>
 );
-
-// Circular risk gauge, 0-100.
-function Gauge({ value, color }: { value: number; color: string }) {
-  const r = 34, c = 2 * Math.PI * r;
-  return (
-    <svg width="92" height="92" viewBox="0 0 92 92" role="img" aria-label={`Risk score ${value} of 100`}>
-      <circle cx="46" cy="46" r={r} fill="none" stroke="#eef1f8" strokeWidth="9" />
-      <circle cx="46" cy="46" r={r} fill="none" stroke={color} strokeWidth="9" strokeLinecap="round" strokeDasharray={`${(value / 100) * c} ${c}`} transform="rotate(-90 46 46)" />
-      <text x="46" y="52" textAnchor="middle" className="gauge-num">{value}</text>
-    </svg>
-  );
-}
-
-const NAV = [
-  ["Home", "#top", "◐"],
-  ["Timeline", "#timeline", "▦"],
-  ["Subscriptions", "#matrix", "☰"],
-  ["Defender", "#defender", "◈"],
-] as const;
-
-const TICKER = ["AUDITOR READS YOUR PAYPAL SUBSCRIPTIONS", "DETECTIVE SCORES DARK PATTERNS", "DEFENDER CANCELS BEFORE YOU PAY", "SANDBOX ONLY", "ZERO FORGOTTEN TRIALS"];
 
 export default function Dashboard() {
   const [subs, setSubs] = useState<Subscription[] | null>(null);
@@ -94,144 +73,98 @@ export default function Dashboard() {
   }, [live, days]);
 
   return (
-    <>
-      <div className="ticker" aria-hidden>
-        <div className="ticker-track">
-          {[...TICKER, ...TICKER, ...TICKER, ...TICKER].map((t, i) => <span key={i}>{t}</span>)}
+    <div className="page" id="top">
+      <header className="nav glass">
+        <b className="wordmark">SubShield</b>
+        <nav aria-label="Sections">
+          <a href="#timeline">Timeline</a>
+          <a href="#outlook">Outlook</a>
+          <a href="#matrix">Subscriptions</a>
+        </nav>
+        <span className="pill">PayPal sandbox</span>
+      </header>
+
+      <section className="intro">
+        <div>
+          <h1>Subscriptions</h1>
+          <p>Three agents watch your PayPal subscriptions{loadedAt ? ` · updated ${loadedAt.toLocaleTimeString()}` : ""}</p>
         </div>
-      </div>
+        <div className="actions">
+          <button className="primary" onClick={load}>Scan now</button>
+          <button onClick={runAlerts} disabled={sweep.busy}>{sweep.busy ? "Sending…" : "Send alerts"}</button>
+        </div>
+      </section>
 
-      <div className="shell" id="top">
-        <aside className="side">
-          <div className="brand">
-            <div className="logo" aria-hidden>🛡️</div>
-            <b>SubShield</b>
-          </div>
-          <nav aria-label="Sections">
-            {NAV.map(([label, href, icon], i) => (
-              <a key={label} href={href} className={i === 0 ? "on" : ""}><span aria-hidden>{icon}</span>{label}</a>
-            ))}
-          </nav>
-          <div className="side-foot">
-            <span className="pill">PayPal Sandbox</span>
-            <small>Subscriptions are read live from PayPal.</small>
-          </div>
-        </aside>
+      {sweep.msg && <p className="notice glass" role="status">{sweep.msg}</p>}
+      {error && <p role="alert" className="notice glass bad">Could not load subscriptions: {error}</p>}
+      {!subs && !error && <p className="notice glass">Loading…</p>}
 
-        <main className="content">
-          <header className="bar">
-            <div>
-              <div className="eyebrow">SubShield agent studio</div>
-              <h1 className="title">Your subscriptions, <em>defended.</em></h1>
-            </div>
-            <div className="who">
-              {loadedAt && <small className="mono">Updated {loadedAt.toLocaleTimeString()}</small>}
-              <span className="chip"><Avatar name="Karthikeyan" size={28} />Karthikeyan</span>
-            </div>
-          </header>
-
-          {error && <p role="alert" className="notice bad">Could not load subscriptions: {error}</p>}
-          {!subs && !error && <p className="notice">Loading…</p>}
-
-          {subs && (
-            <div className="cols">
-              <div className="stack">
-                <section className="hero">
-                  <div className="eyebrow light">Total monthly spend</div>
-                  <div className="big">{money(monthly)}<span className={`delta${hikes.length ? " bad" : ""}`}>{hikes.length ? `+${money(hikeMonthly)} from hikes` : "No hikes"}</span></div>
-                  <div className="actions">
-                    <button className="light" onClick={load}>↻ Scan now</button>
-                    <button className="glass" onClick={runAlerts} disabled={sweep.busy}>{sweep.busy ? "Sending…" : "✉ Send alerts"}</button>
-                    {threat?.status === "ACTIVE" && <button className="glass" onClick={() => cancel(threat)}>Cancel {threat.merchant}</button>}
-                  </div>
-                  {sweep.msg && <p className="note" role="status">{sweep.msg}</p>}
-                  {threat?.hike && (
-                    <p className="note" role="status">
-                      ⚠ {threat.merchant} raised your rate by {threat.hike.pct}% ({money(threat.hike.from)} → {money(threat.hike.to)}), {money((threat.hike.to - threat.hike.from) * 12)} more a year.
-                    </p>
-                  )}
-                  <div className="stats">
-                    <div><span>Subscriptions</span><b>{live.length}</b></div>
-                    <div><span>Price hikes</span><b>{hikes.length}</b></div>
-                    <div><span>Trials &lt; 48h</span><b>{trials.length}</b></div>
-                    <div><span>Highest risk</span><b>{top?.predatoryScore ?? 0}</b></div>
-                  </div>
-                </section>
-
-                <div className="mini-row">
-                  {live.map((s) => (
-                    <button key={s.id} className={`mini${s.id === focus?.id ? " on" : ""}`} onClick={() => setSelected(s.id)} aria-pressed={s.id === focus?.id}>
-                      <span className="mini-top"><Avatar name={s.merchant} size={28} />{s.merchant}<i className="dot" style={{ background: COLOR[urgency(s)], boxShadow: `0 0 0 4px ${COLOR[urgency(s)]}22` }} /></span>
-                      <span className="mini-val">{s.price ? money(s.price) : "—"}</span>
-                      <span className="mini-sub">Risk {s.predatoryScore}/100 · {STATUS[s.status]?.label ?? s.status}</span>
-                    </button>
-                  ))}
-                </div>
-
-                <section className="promo">
-                  <div className="eyebrow light">Zapier · WhatsApp</div>
-                  <h3>Let the agents watch for you</h3>
-                  <p>Price hikes and ending trials are scored and pushed to your phone. Reply once to cancel.</p>
-                  <button className="light" onClick={runAlerts} disabled={sweep.busy}>Run alert sweep ↗</button>
-                </section>
+      {subs && (
+        <>
+          {threat?.hike && (
+            <div className="alert glass" role="status">
+              <div>
+                <b>{threat.merchant} raised your rate by {threat.hike.pct}%</b>
+                <span>{money(threat.hike.from)} → {money(threat.hike.to)} a month, {money((threat.hike.to - threat.hike.from) * 12)} more a year. Risk {threat.predatoryScore}/100.</span>
               </div>
-
-              <div className="stack">
-                <section className="card pad">
-                  <div className="row-between">
-                    <h2>Spend outlook</h2>
-                    <select aria-label="Chart range" value={days} onChange={(e) => setDays(Number(e.target.value))}>
-                      <option value={30}>30 days</option>
-                      <option value={60}>60 days</option>
-                      <option value={90}>90 days</option>
-                    </select>
-                  </div>
-                  <p className="sub">Cumulative charges expected from your subscriptions.</p>
-                  <TrendChart points={trend} />
-                </section>
-
-                <section className="card pad" id="defender">
-                  <h2>Defender</h2>
-                  {focus && (
-                    <>
-                      <div className="people" role="group" aria-label="Choose a subscription">
-                        {live.map((s) => (
-                          <button key={s.id} className={`person${s.id === focus.id ? " on" : ""}`} onClick={() => setSelected(s.id)}>
-                            <Avatar name={s.merchant} size={40} />
-                            <small>{s.merchant}</small>
-                          </button>
-                        ))}
-                      </div>
-                      <div className="gauge-row">
-                        <Gauge value={focus.predatoryScore} color={COLOR[urgency(focus)]} />
-                        <div>
-                          <div className="kv"><span>Price</span><b>{focus.price ? money(focus.price) : "—"}</b></div>
-                          <div className="kv"><span>Status</span><b>{STATUS[focus.status]?.label ?? focus.status}</b></div>
-                          <div className="kv"><span>Hike</span><b>{focus.hike ? `+${focus.hike.pct}%` : "None"}</b></div>
-                        </div>
-                      </div>
-                      {focus.status === "ACTIVE" || focus.status === "SUSPENDED" ? (
-                        <button className="primary wide" onClick={() => cancel(focus)}>Cancel {focus.merchant}</button>
-                      ) : focus.approveUrl ? (
-                        <a className="btn primary wide" href={focus.approveUrl} target="_blank" rel="noreferrer">Approve {focus.merchant} on PayPal ↗</a>
-                      ) : (
-                        <button className="primary wide" disabled>Nothing to do</button>
-                      )}
-                    </>
-                  )}
-                </section>
-              </div>
+              {threat.status === "ACTIVE" && <button className="danger" onClick={() => cancel(threat)}>Cancel {threat.merchant}</button>}
             </div>
           )}
 
-          {subs && (
-            <>
-              <div id="timeline"><Timeline subs={subs} selectedId={selected} onSelect={setSelected} /></div>
-              <div id="matrix"><Matrix subs={subs} selectedId={selected} onSelect={setSelected} onCancel={cancel} /></div>
-            </>
-          )}
-        </main>
-      </div>
-    </>
+          <div className="tiles">
+            <div className="tile glass"><span>Monthly spend</span><b>{money(monthly)}</b><small>{live.length} subscriptions</small></div>
+            <div className="tile glass"><span>Price hikes</span><b className={hikes.length ? "bad" : ""}>{hikes.length}</b><small>{hikes.length ? `+${money(hikeMonthly)} a month` : "None detected"}</small></div>
+            <div className="tile glass"><span>Trials ending</span><b className={trials.length ? "bad" : ""}>{trials.length}</b><small>Within 48 hours</small></div>
+            <div className="tile glass"><span>Highest risk</span><b>{top?.predatoryScore ?? 0}<i>/100</i></b><small>{top?.merchant ?? "—"}</small></div>
+          </div>
+
+          <div id="timeline"><Timeline subs={subs} selectedId={selected} onSelect={setSelected} /></div>
+
+          <div className="two" id="outlook">
+            <section className="card glass pad">
+              <div className="row-between">
+                <h2>Spend outlook</h2>
+                <select aria-label="Chart range" value={days} onChange={(e) => setDays(Number(e.target.value))}>
+                  <option value={30}>30 days</option>
+                  <option value={60}>60 days</option>
+                  <option value={90}>90 days</option>
+                </select>
+              </div>
+              <p className="sub">Cumulative charges expected from your subscriptions.</p>
+              <TrendChart points={trend} />
+            </section>
+
+            <section className="card glass pad" id="defender">
+              <h2>Defender</h2>
+              {focus && (
+                <>
+                  <div className="people" role="group" aria-label="Choose a subscription">
+                    {live.map((s) => (
+                      <button key={s.id} className={`person${s.id === focus.id ? " on" : ""}`} onClick={() => setSelected(s.id)}>
+                        <Avatar name={s.merchant} size={34} />
+                        {s.merchant}
+                      </button>
+                    ))}
+                  </div>
+                  <div className="kv"><span>Price</span><b>{focus.price ? money(focus.price) : "—"}</b></div>
+                  <div className="kv"><span>Status</span><b>{STATUS[focus.status]?.label ?? focus.status}</b></div>
+                  <div className="kv"><span>Price change</span><b>{focus.hike ? `+${focus.hike.pct}%` : "None"}</b></div>
+                  <div className="kv"><span>Risk score</span><b style={{ color: COLOR[urgency(focus)] }}>{focus.predatoryScore} / 100</b></div>
+                  {focus.status === "ACTIVE" || focus.status === "SUSPENDED" ? (
+                    <button className="primary wide" onClick={() => cancel(focus)}>Cancel {focus.merchant}</button>
+                  ) : focus.approveUrl ? (
+                    <a className="btn primary wide" href={focus.approveUrl} target="_blank" rel="noreferrer">Approve on PayPal</a>
+                  ) : (
+                    <button className="primary wide" disabled>Nothing to do</button>
+                  )}
+                </>
+              )}
+            </section>
+          </div>
+
+          <div id="matrix"><Matrix subs={subs} selectedId={selected} onSelect={setSelected} onCancel={cancel} /></div>
+        </>
+      )}
+    </div>
   );
 }

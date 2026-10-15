@@ -27,13 +27,10 @@ export function urgency(s: Subscription, now = Date.now()): Urgency {
   return s.hike ? "yellow" : "green";
 }
 
-export const COLOR = { red: "#e8344e", yellow: "#f59e0b", green: "#0fa968" } as const;
+export const COLOR = { red: "#d63a3a", yellow: "#f59e0b", green: "#2f8a1f" } as const;
 
-// Gradient avatar background from a name.
-export const avatarBg = (name: string) => {
-  const h = [...name].reduce((a, c) => (a * 31 + c.charCodeAt(0)) % 360, 7);
-  return `linear-gradient(135deg, hsl(${h} 85% 62%), hsl(${(h + 45) % 360} 80% 46%))`;
-};
+// Flat avatar colour from a name.
+export const avatarBg = (name: string) => `hsl(${[...name].reduce((a, c) => (a * 31 + c.charCodeAt(0)) % 360, 7)} 45% 46%)`;
 
 export const money = (n: number) => `$${n.toFixed(2)}`;
 

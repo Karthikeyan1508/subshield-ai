@@ -78,7 +78,7 @@ export default function Timeline({
   const { days, preset } = RANGES[range];
 
   return (
-    <section className="card">
+    <section className="card glass">
       <div className="card-head">
         <div>
           <h2>Renewal timeline</h2>

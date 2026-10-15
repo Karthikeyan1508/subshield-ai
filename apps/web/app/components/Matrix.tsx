@@ -7,16 +7,17 @@ import { COLOR, STATUS, avatarBg, money, urgency, type Subscription } from "../l
 ModuleRegistry.registerModules([AllCommunityModule]);
 
 const theme = themeQuartz.withParams({
-  accentColor: "#163300",
-  backgroundColor: "#ffffff",
-  foregroundColor: "#0e1a05",
-  headerBackgroundColor: "#f7f9f1",
-  headerTextColor: "#647056",
-  borderColor: "#e8ecdd",
-  rowHoverColor: "#f4faea",
+  accentColor: "#1d3a0c",
+  backgroundColor: "transparent",
+  foregroundColor: "#12220b",
+  headerBackgroundColor: "transparent",
+  headerTextColor: "#5a6a4e",
+  borderColor: "rgba(18, 34, 11, 0.1)",
+  rowHoverColor: "rgba(159, 232, 112, 0.18)",
   fontFamily: "inherit",
-  headerFontWeight: 600,
-  wrapperBorderRadius: 14,
+  fontSize: 16,
+  headerFontWeight: 700,
+  wrapperBorder: false,
   spacing: 7,
 });
 
@@ -81,8 +82,8 @@ export default function Matrix({
     },
     {
       field: "status",
-      flex: 1.1,
-      minWidth: 120,
+      flex: 1.2,
+      minWidth: 160,
       cellRenderer: ({ value }: { value: string }) => {
         const s = STATUS[value] ?? { label: value, tone: "off" as const };
         return <span className={`badge ${s.tone}`}>{s.label}</span>;
@@ -109,13 +110,12 @@ export default function Matrix({
           <span style={{ color: "#94a3b8" }}>No change</span>
         ),
     },
-    { field: "trialEndsAt", headerName: "Trial ends", flex: 1, minWidth: 105, valueFormatter: ({ value }) => when(value) },
     { field: "nextBillingTime", headerName: "Next charge", flex: 1, minWidth: 105, valueFormatter: ({ value }) => when(value) },
     {
       field: "predatoryScore",
       headerName: "Risk score",
       flex: 1,
-      minWidth: 110,
+      minWidth: 140,
       sort: "desc",
       cellRenderer: ({ data }: { data?: Subscription }) =>
         data && (
@@ -142,10 +142,10 @@ export default function Matrix({
   ];
 
   return (
-    <section className="card">
+    <section className="card glass">
       <div className="card-head">
         <div>
-          <h2>Subscriptions</h2>
+          <h2>All subscriptions</h2>
           <p>Sort, filter and click a row to highlight it on the timeline.</p>
         </div>
         <div className="tools">
@@ -159,7 +159,7 @@ export default function Matrix({
           theme={theme}
           rowData={subs}
           columnDefs={columns}
-          defaultColDef={{ sortable: true, filter: true, resizable: true }}
+          defaultColDef={{ sortable: true, filter: true, resizable: true, suppressHeaderFilterButton: true }}
           quickFilterText={filter}
           domLayout="autoHeight"
           rowHeight={54}

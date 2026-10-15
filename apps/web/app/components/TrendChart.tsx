@@ -45,13 +45,12 @@ export default function TrendChart({ points }: { points: Point[] }) {
             <stop offset="100%" stopColor="#d6f56b" stopOpacity="0" />
           </linearGradient>
           <linearGradient id={gid + "s"} x1="0" y1="0" x2="1" y2="0">
-            <stop offset="0%" stopColor="#2f8a1f" />
-            <stop offset="60%" stopColor="#5fd05a" />
-            <stop offset="100%" stopColor="#b6e82a" />
+            <stop offset="0%" stopColor="#1d3a0c" />
+            <stop offset="100%" stopColor="#3f8f1a" />
           </linearGradient>
         </defs>
         <path d={area} fill={`url(#${gid})`} />
-        <path d={line} fill="none" stroke={`url(#${gid}s)`} strokeWidth="3" strokeLinecap="round" />
+        <path d={line} fill="none" stroke={`url(#${gid}s)`} strokeWidth="2.5" strokeLinecap="round" />
         {ticks.map((t, i) => (
           <text key={i} x={PAD + (i / 3) * (W - 2 * PAD)} y={H - 4} textAnchor={i === 0 ? "start" : i === 3 ? "end" : "middle"} className="tick">{fmt(t)}</text>
         ))}
