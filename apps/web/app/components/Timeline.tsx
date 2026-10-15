@@ -3,7 +3,7 @@ import "@bryntum/scheduler/scheduler.css";
 import "@bryntum/scheduler/svalbard-light.css";
 import { BryntumScheduler } from "@bryntum/scheduler-react";
 import { useMemo, useState } from "react";
-import { COLOR, STATUS, money, monthStep, urgency, type Subscription } from "../lib";
+import { COLOR, STATUS, avatarBg, money, monthStep, urgency, type Subscription } from "../lib";
 
 const DAY = 864e5;
 const RANGES = {
@@ -14,7 +14,6 @@ const RANGES = {
 type Range = keyof typeof RANGES;
 
 const EVENT_COLOR = { red: "red", yellow: "orange", green: "lime" } as const;
-const hue = (s: string) => [...s].reduce((h, c) => (h * 31 + c.charCodeAt(0)) % 360, 7);
 const day = (iso: string | Date) => new Date(iso).toLocaleDateString(undefined, { weekday: "short", month: "short", day: "numeric" });
 
 export default function Timeline({
@@ -108,7 +107,7 @@ export default function Timeline({
             htmlEncode: false,
             renderer: ({ record }: { record: { get(k: string): unknown } }) => {
               const name = String(record.get("name"));
-              return `<div class="merchant"><span class="avatar" style="background:hsl(${hue(name)} 65% 50%)">${name[0]}</span>${name}</div>`;
+              return `<div class="merchant"><span class="avatar" style="background:${avatarBg(name)}">${name[0]}</span>${name}</div>`;
             },
           },
         ]}

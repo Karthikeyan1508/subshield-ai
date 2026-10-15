@@ -41,18 +41,23 @@ export default function TrendChart({ points }: { points: Point[] }) {
       <svg viewBox={`0 0 ${W} ${H}`} role="img" aria-label="Cumulative projected spend">
         <defs>
           <linearGradient id={gid} x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stopColor="#9fe870" stopOpacity="0.55" />
-            <stop offset="100%" stopColor="#9fe870" stopOpacity="0" />
+            <stop offset="0%" stopColor="#9fe870" stopOpacity="0.6" />
+            <stop offset="100%" stopColor="#d6f56b" stopOpacity="0" />
+          </linearGradient>
+          <linearGradient id={gid + "s"} x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0%" stopColor="#2f8a1f" />
+            <stop offset="60%" stopColor="#5fd05a" />
+            <stop offset="100%" stopColor="#b6e82a" />
           </linearGradient>
         </defs>
         <path d={area} fill={`url(#${gid})`} />
-        <path d={line} fill="none" stroke="#9fe870" strokeWidth="2.5" strokeLinecap="round" />
+        <path d={line} fill="none" stroke={`url(#${gid}s)`} strokeWidth="3" strokeLinecap="round" />
         {ticks.map((t, i) => (
           <text key={i} x={PAD + (i / 3) * (W - 2 * PAD)} y={H - 4} textAnchor={i === 0 ? "start" : i === 3 ? "end" : "middle"} className="tick">{fmt(t)}</text>
         ))}
         {hover !== undefined && (
           <>
-            <line x1={xy[hover][0]} x2={xy[hover][0]} y1={10} y2={H - 24} stroke="#163300" strokeOpacity="0.25" strokeDasharray="3 3" />
+            <line x1={xy[hover][0]} x2={xy[hover][0]} y1={10} y2={H - 24} stroke="#163300" strokeOpacity="0.3" strokeDasharray="3 3" />
             <circle cx={xy[hover][0]} cy={xy[hover][1]} r="4.5" fill="#163300" stroke="#fff" strokeWidth="2" />
           </>
         )}

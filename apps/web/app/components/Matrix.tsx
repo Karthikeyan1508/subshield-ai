@@ -2,25 +2,23 @@
 import { useEffect, useRef, useState } from "react";
 import { AgGridReact } from "ag-grid-react";
 import { AllCommunityModule, ModuleRegistry, themeQuartz, type ColDef } from "ag-grid-community";
-import { COLOR, STATUS, money, urgency, type Subscription } from "../lib";
+import { COLOR, STATUS, avatarBg, money, urgency, type Subscription } from "../lib";
 
 ModuleRegistry.registerModules([AllCommunityModule]);
 
 const theme = themeQuartz.withParams({
   accentColor: "#163300",
   backgroundColor: "#ffffff",
-  foregroundColor: "#0e0f0c",
-  headerBackgroundColor: "#f7f8f3",
-  headerTextColor: "#6b7064",
-  borderColor: "#e6e8df",
-  rowHoverColor: "#f4f9ee",
+  foregroundColor: "#0e1a05",
+  headerBackgroundColor: "#f7f9f1",
+  headerTextColor: "#647056",
+  borderColor: "#e8ecdd",
+  rowHoverColor: "#f4faea",
   fontFamily: "inherit",
   headerFontWeight: 600,
   wrapperBorderRadius: 14,
   spacing: 7,
 });
-
-const hue = (s: string) => [...s].reduce((h, c) => (h * 31 + c.charCodeAt(0)) % 360, 7);
 
 // Relative time like "in 2d" / "in 5h"; plain date for the label.
 function when(iso: string | null) {
@@ -73,7 +71,7 @@ export default function Matrix({
       cellRenderer: ({ data }: { data?: Subscription }) =>
         data && (
           <div className="merchant">
-            <span className="avatar" style={{ background: `hsl(${hue(data.merchant)} 65% 50%)` }}>{data.merchant[0]}</span>
+            <span className="avatar" style={{ background: avatarBg(data.merchant) }}>{data.merchant[0]}</span>
             <div>
               {data.merchant}
               <small>{data.interval ? `Every ${data.interval.toLowerCase()}` : "—"}</small>
