@@ -12,3 +12,16 @@ export function paypalToolkit() {
     configuration: { actions: ALL_TOOLS_ENABLED, context: { sandbox: true } },
   });
 }
+
+let toolkit: ReturnType<typeof paypalToolkit> | undefined;
+
+// Runs a toolkit tool and returns its parsed JSON; throws if PayPal returned an error.
+export async function call(name: string, args: Record<string, unknown>): Promise<any> {
+  toolkit ??= paypalToolkit();
+  const tool = toolkit.getTools()[name] as any;
+  if (!tool) throw new Error(`unknown tool: ${name}`);
+  const out = await tool.execute(args, {});
+  const data = typeof out === "string" ? JSON.parse(out) : out;
+  if (data?.name && data?.message && data?.debug_id) throw new Error(`${name}: ${data.name} ${data.message}`);
+  return data;
+}
