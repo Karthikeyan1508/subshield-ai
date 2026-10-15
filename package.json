@@ -1,0 +1,12 @@
+{
+  "name": "subshield-ai",
+  "private": true,
+  "license": "MIT",
+  "workspaces": ["apps/*"],
+  "scripts": {
+    "dev:api": "npm run dev -w api",
+    "dev:web": "npm run dev -w web",
+    "smoke": "npm run smoke -w api",
+    "typecheck": "npm run typecheck -ws"
+  }
+}
