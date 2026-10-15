@@ -4,7 +4,8 @@ Autonomous subscription and dark-pattern defense agent for PayPal (sandbox only)
 
 - `apps/web` — Next.js dashboard: Bryntum renewal timeline + AG Grid subscription table (port 3000)
 - `apps/api` — Express + TypeScript API (port 4000) on `@paypal/agent-toolkit`
-- `openapi.yaml` — API spec (generate SDKs from it with APIMatic)
+- `openapi.yaml` — API spec
+- `sdk/` — client SDKs (TypeScript, Python, Java) generated from the spec with APIMatic
 - `postman/` — Postman collection (`npx newman run postman/SubShield_AI.postman_collection.json`)
 - `render.yaml` — Render blueprint (api + web)
 
@@ -41,5 +42,5 @@ npm test -w api
 ## Known limits
 
 - Subscriptions stay `APPROVAL_PENDING` until a sandbox buyer approves them on PayPal.
-- Not built: Elastic ToS scoring, Channel3 merchant lookup, WhatsApp replies, APIMatic SDK output.
+- Not built: Elastic ToS scoring, Channel3 merchant lookup, WhatsApp replies. APIMatic CLI has no Swift target.
 - The POST routes have no authentication.
